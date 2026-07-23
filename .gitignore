@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+vector_db/
+uploads/*
+!uploads/.gitkeep
+data/processed/*
+data/external/*
+*.db
+*.gguf
+.venv/
+venv/
+*.egg-info/

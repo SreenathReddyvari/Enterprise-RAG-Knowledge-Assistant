@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rag_user
+      POSTGRES_PASSWORD: rag_password
+      POSTGRES_DB: rag_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: uvicorn src.api.app:app --host 0.0.0.0 --port 8020
+    ports:
+      - "8020:8020"
+    environment:
+      DATABASE_URL: postgresql+psycopg2://rag_user:rag_password@postgres:5432/rag_db
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+    depends_on:
+      - postgres
+    volumes:
+      - ../vector_db:/app/vector_db
+      - ../uploads:/app/uploads
+
+  dashboard:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: streamlit run src/dashboard/streamlit_app.py --server.port 8520 --server.address 0.0.0.0
+    ports:
+      - "8520:8520"
+    environment:
+      API_BASE_URL: http://api:8020
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
