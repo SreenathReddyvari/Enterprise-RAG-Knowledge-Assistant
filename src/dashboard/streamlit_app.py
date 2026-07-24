@@ -1,4 +1,11 @@
 """Streamlit dashboard for the Enterprise RAG Knowledge Assistant."""
+import sys
+from pathlib import Path
+
+# `streamlit run` puts this file's own directory on sys.path, not the project
+# root, so the `src` package isn't importable unless we add it ourselves.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 import httpx
 import streamlit as st
 
